@@ -1,3 +1,6 @@
+import { ClerkProvider } from "@clerk/nextjs";
+import { AuthProvider } from "@/context/AuthContext";
+import Navbar from "./components/layout/Navbar";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -18,12 +21,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`bg-gray-50 ${geistSans.variable} ${geistMono.variable}`}
+          >
+          <AuthProvider>
+            <Navbar />
+            <main className="max-w-6xl mx-auto">{children}</main>
+          </AuthProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
