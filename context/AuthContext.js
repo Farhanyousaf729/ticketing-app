@@ -5,11 +5,33 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const { isSignedIn, user } = useUser();
+  const [userData, setUserData] = useState(null);
 
+  // # get currentuser data from backend
+
+    const getUser = async () => {
+      try {
+        const res = await fetch("/api/authUser");
+        const {user} = await res.json();
+        setUserData(user);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    useEffect(() => {
+      if (isSignedIn) {
+        getUser();
+      }
+      else {
+        setUserData(null);
+      }
+      
+    }, [isSignedIn, user]);
     
+   
 
   const Value = {
-    user,isSignedIn
+    user,isSignedIn, userData
   };
 
 

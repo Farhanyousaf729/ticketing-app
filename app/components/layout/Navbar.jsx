@@ -3,15 +3,15 @@ import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useUser, useClerk, UserButton } from "@clerk/nextjs";
+import { useClerk, UserButton } from "@clerk/nextjs";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const { openSignIn, openSignUp } = useClerk();
   const router = useRouter();
-const { user, isSignedIn } = useAuth(); 
-  
+  const { user, isSignedIn,userData } = useAuth();
+       
   const links = [
     { href: "/", label: "Home" },
     { href: "/search", label: "Search" },
@@ -19,11 +19,11 @@ const { user, isSignedIn } = useAuth();
   ];
 
   // Redirect to home after login
-  useEffect(() => {
-    router.push("/");
-    if (isSignedIn) {
-  }
-  }, [isSignedIn, router]);
+  // useEffect(() => {
+  //   if (isSignedIn) {
+  //     router.push("/");
+  //   }
+  // }, [isSignedIn, router]);
 
   return (
     <nav className="bg-blue-600 text-white shadow-md">
@@ -47,6 +47,18 @@ const { user, isSignedIn } = useAuth();
             </Link>
           ))}
 
+          {/* Show Admin Dashboard if role = admin */}
+          {userData?.role === "admin" && (
+            <Link
+              href="/admin"
+              className={`px-4 py-2 rounded-lg bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 transition ${
+                pathname === "/admin" ? "ring-2 ring-yellow-300" : ""
+              }`}
+            >
+              ⚡ Admin Dashboard
+            </Link>
+          )}
+
           {/* Auth Buttons */}
           <div className="flex space-x-3">
             {!isSignedIn ? (
@@ -65,7 +77,7 @@ const { user, isSignedIn } = useAuth();
                 </button>
               </>
             ) : (
-              <UserButton redirectUrl="/" />  
+              <UserButton redirectUrl="/" />
             )}
           </div>
         </div>
@@ -95,6 +107,17 @@ const { user, isSignedIn } = useAuth();
             </Link>
           ))}
 
+          {/* Admin Dashboard for Mobile */}
+          {user?.role === "admin" && (
+            <Link
+              href="/admin"
+              onClick={() => setMenuOpen(false)}
+              className="block px-4 py-2 rounded-lg bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 transition"
+            >
+              ⚡ Admin Dashboard
+            </Link>
+          )}
+
           {/* Auth Buttons */}
           <div className="flex space-x-3 mt-3">
             {!isSignedIn ? (
@@ -120,7 +143,7 @@ const { user, isSignedIn } = useAuth();
               </>
             ) : (
               <div className="flex-1 flex justify-center">
-                <UserButton redirectUrl ="/" />
+                <UserButton redirectUrl="/" />
               </div>
             )}
           </div>

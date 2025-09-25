@@ -22,6 +22,8 @@ export const userUpdated = inngest.createFunction(
   { id: "User-Updated"},{ event: "clerk/user.updated" },
   async ({ event }) => {
     const { email_addresses, first_name, last_name, image_url, id } = event.data;
+    console.log(event.data);
+    
     const UserData = { email: email_addresses[0].email_address,
       name: first_name + " " + last_name,
       clerkId: id,

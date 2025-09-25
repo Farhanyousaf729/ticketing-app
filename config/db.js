@@ -16,8 +16,9 @@ async function dbConnect() {
       bufferCommands: false,
     };
 
+    const dburi = process.env.NODE_ENV === "production" ? process.env.MONGODB_URI : process.env.MONGODB_URI_PROD
     cached.promise = mongoose
-      .connect(process.env.MONGODB_URI, opts)
+      .connect(dburi, opts)
       .then((mongoose) => {
         return mongoose;
       });
