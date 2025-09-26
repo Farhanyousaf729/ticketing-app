@@ -27,6 +27,7 @@ export default function FlightSearch() {
   const [currency, setCurrency] = useState("USD");
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searched, setSearched] = useState(false); // new state
 
   const [originFocused, setOriginFocused] = useState(false);
   const [destinationFocused, setDestinationFocused] = useState(false);
@@ -45,9 +46,7 @@ export default function FlightSearch() {
   const fetchAirports = async (query) => {
     if (!query) return [];
     try {
-      const res = await fetch(
-        `/api/airports?q=${query.trim()}`
-      );
+      const res = await fetch(`/api/airports?q=${query.trim()}`);
       return await res.json();
     } catch (err) {
       console.error("Airport Fetch Error:", err);
@@ -75,17 +74,17 @@ export default function FlightSearch() {
 
   const handleSelect = (setter, setterValue, suggestionsSetter, airport) => {
     console.log(`Selected Airport: ${airport.name} (${airport.iata})`);
-    
+
     setter(`${airport.city} (${airport.iata})`);
     setterValue(airport.iata);
     suggestionsSetter([]);
   };
-  
-  
+
   const handleSearch = async () => {
-    console.log(`Searching flights from ${originValue} to ${destinationValue} on ${departureDate}`);
     if (!originValue || !destinationValue || !departureDate) return;
     setLoading(true);
+    setSearched(true); // mark that user searched
+
     try {
       const query = new URLSearchParams({
         origin: originValue,
@@ -280,33 +279,32 @@ export default function FlightSearch() {
           className="bg-blue-600 text-white px-8 py-3 rounded-full hover:bg-blue-700 shadow-lg hover:shadow-xl transition text-lg font-semibold"
         >
           {loading ? "Searching..." : "Search Flights"}
-         
         </button>
-
       </div>
-       {loading && (
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="bg-white p-8 rounded-2xl shadow-md">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Skeleton className="w-12 h-12 rounded-full" />
-                    <Skeleton className="h-6 w-32" />
-                  </div>
 
-                  <div className="space-y-3">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-6 w-5/6" />
-                    <Skeleton className="h-6 w-4/6" />
-                  </div>
+      {loading && (
+        <div className="grid md:grid-cols-2 gap-6 mt-8">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-white p-8 rounded-2xl shadow-md">
+              <div className="flex items-center gap-3 mb-4">
+                <Skeleton className="w-12 h-12 rounded-full" />
+                <Skeleton className="h-6 w-32" />
+              </div>
 
-                  <div className="mt-4 flex justify-between items-center">
-                    <Skeleton className="h-6 w-20" />
-                    <Skeleton className="h-12 w-48" />
-                  </div>
-                </div>
-              ))}
+              <div className="space-y-3">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-6 w-5/6" />
+                <Skeleton className="h-6 w-4/6" />
+              </div>
+
+              <div className="mt-4 flex justify-between items-center">
+                <Skeleton className="h-6 w-20" />
+                <Skeleton className="h-12 w-48" />
+              </div>
             </div>
-          )}
+          ))}
+        </div>
+      )}
 
       {/* Flights Results */}
       {flights.length > 0 && (
@@ -408,8 +406,17 @@ export default function FlightSearch() {
           ))}
         </div>
       )}
-      {!loading && flights.length === 0 && (
+
+      {/* No flights found */}
+      {!loading && searched && flights.length === 0 && (
         <p className="text-center text-gray-500 mt-8">No flights found.</p>
+      )}
+
+      {/* Landing message */}
+      {!loading && !searched && (
+        <p className="text-center text-gray-500 mt-8">
+          Enter details and click "Search Flights" to find available flights.
+        </p>
       )}
     </div>
   );
