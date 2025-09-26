@@ -46,7 +46,7 @@ export default function FlightSearch() {
     if (!query) return [];
     try {
       const res = await fetch(
-        `/api/amadeus/airports?keyword=${query.toUpperCase()}`
+        `/api/airports?q=${query.trim()}`
       );
       return await res.json();
     } catch (err) {
@@ -74,12 +74,16 @@ export default function FlightSearch() {
   }, [debouncedDestination]);
 
   const handleSelect = (setter, setterValue, suggestionsSetter, airport) => {
-    setter(`${airport.city} (${airport.iataCode})`);
-    setterValue(airport.iataCode);
+    console.log(`Selected Airport: ${airport.name} (${airport.iata})`);
+    
+    setter(`${airport.city} (${airport.iata})`);
+    setterValue(airport.iata);
     suggestionsSetter([]);
   };
-
+  
+  
   const handleSearch = async () => {
+    console.log(`Searching flights from ${originValue} to ${destinationValue} on ${departureDate}`);
     if (!originValue || !destinationValue || !departureDate) return;
     setLoading(true);
     try {
@@ -165,7 +169,7 @@ export default function FlightSearch() {
                     )
                   }
                 >
-                  {a.iataCode} - {a.name} ({a.country})
+                  {a.iata} - {a.name} ({a.country})
                 </li>
               ))}
             </ul>
@@ -202,7 +206,7 @@ export default function FlightSearch() {
                     )
                   }
                 >
-                  {a.iataCode} - {a.name} ({a.country})
+                  {a.iata} - {a.name} ({a.country})
                 </li>
               ))}
             </ul>
@@ -403,6 +407,9 @@ export default function FlightSearch() {
             </div>
           ))}
         </div>
+      )}
+      {!loading && flights.length === 0 && (
+        <p className="text-center text-gray-500 mt-8">No flights found.</p>
       )}
     </div>
   );
