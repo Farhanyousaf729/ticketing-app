@@ -14,8 +14,8 @@ export default function Navbar() {
        
   const links = [
     { href: "/", label: "Home" },
-    { href: "/search", label: "Search" },
-    { href: "/booking", label: "Booking" },
+    // { href: "/search", label: "Search" },
+    // { href: "/booking", label: "Booking" },
   ];
 
   // Redirect to home after login

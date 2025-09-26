@@ -17,6 +17,8 @@ async function dbConnect() {
     };
 
     const dburi = process.env.NODE_ENV === "production" ? process.env.MONGODB_URI : process.env.MONGODB_URI_PROD
+    console.log("Connecting to DB with URI:", dburi);
+
     cached.promise = mongoose
       .connect(dburi, opts)
       .then((mongoose) => {
